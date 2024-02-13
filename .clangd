@@ -1,0 +1,19 @@
+CompileFlags:
+  Add: -Wno-unknown-warning-option
+  Remove: [
+    -gstabs+,
+    -m*, 
+    -f*,
+    -mrecord-mcount, 
+    -fconserve-stack, 
+    -fno-allow-store-data-races, 
+    -mfunction-return=thunk-extern, 
+    -mindirect-branch-cs-prefix, 
+    -mindirect-branch-register, 
+    -mindirect-branch=thunk-extern, 
+    -mskip-rax-setup, 
+    -mpreferred-stack-boundary=3, 
+    -mno-fp-ret-in-387, 
+    -fzero-call-used-regs=used-gpr,
+    -mpreferred-stack-boundary,
+    ]

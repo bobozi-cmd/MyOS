@@ -1,0 +1,3 @@
+*.o
+hx_kernel
+compile_commands.json
