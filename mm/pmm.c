@@ -33,8 +33,8 @@ void init_pmm() {
 
     mmap_entry_t *map_entry;
     for (map_entry = mmap_start_addr; map_entry < mmap_end_addr; map_entry++) {
-        // 1: available RAM, 0x100000 is kernel start addr
-        if (map_entry->type == 1 && map_entry->base_addr_low == (uint32_t)kern_start) {
+        // 1: available RAM
+        if (map_entry->type == 1 && map_entry->base_addr_low == 0x100000) {
             // store memory (exclude kernel memory) to page stack
             uint32_t page_addr = map_entry->base_addr_low + (uint32_t)(kern_end - kern_start);
             uint32_t length = map_entry->base_addr_low + map_entry->length_low;

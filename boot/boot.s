@@ -17,7 +17,7 @@ MBOOT_CHECKSUM equ -(MBOOT_HEADER_MAGIC+MBOOT_HEADER_FLAGS)
 ;-----------------------------------------------------------------------------
 
 [BITS 32] ; compile as 32-bit 
-section .text ; code section
+section .init.text ; code section
 
 ; set Multiboot headers at the beginning of text section
 
@@ -26,29 +26,23 @@ dd MBOOT_HEADER_FLAGS
 dd MBOOT_CHECKSUM
 
 [GLOBAL start]           ; declare kernel code entry to linker 
-[GLOBAL glb_mboot_ptr]   ; external struct multiboot * variable
+[GLOBAL mboot_ptr_tmp]   ; external struct multiboot * variable
 [EXTERN kern_entry]      ; declare kernel c code entrypoint
 
 start:
     cli                  ; close interrupt
-
-    mov esp, STACK_TOP   ; set stack top addr
-    mov ebp, 0           ; set stack bottom to 0
-    and esp, 0FFFFFFF0H  ; set stack top algin with 16-Byte grain (FFFF FFF0)
     
-    mov [glb_mboot_ptr], ebx ; mov pointer in ebx to global variable
-    call kern_entry          ; call kernel entrypoint
+    mov [mboot_ptr_tmp], ebx ; mov pointer in ebx to global variable
+    mov esp, STACK_TOP
+    and esp, 0FFFFFFF0H
+    mov ebp, 0
 
-stop:
-    hlt    ; halt
-    jmp stop
+    call kern_entry          ; call kernel entrypoint
 
 ;-----------------------------------------------------------------------------
 
-section .bss ; uninitialized data section 
-stack:
-    resb 32768    ; kernel stack, resb = reserve byte
-glb_mboot_ptr:
-    resb 4
+section .init.data ; tempory data section before paging 
+stack: times 1024 db 0    ; tempory kernel stack
+STACK_TOP equ $-stack-1
 
-STACK_TOP equ $-stack-1 ; $ means current addr
+mboot_ptr_tmp: dd 0

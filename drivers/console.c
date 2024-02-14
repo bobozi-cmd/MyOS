@@ -1,8 +1,9 @@
 #include "console.h"
 #include "common.h"
+#include "vmm.h"
 
 // VGA buffer addr
-static uint16_t *video_memory = (uint16_t *)0xB8000;
+static uint16_t *video_memory = (uint16_t *)(0xB8000 + PAGE_OFFSET);
 
 // cursor loc
 // screen size is 80*25, each char use 2 Bytes

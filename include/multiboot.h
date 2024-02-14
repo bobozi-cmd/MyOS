@@ -49,7 +49,10 @@ typedef struct mmap_entry_t {
 
 } __attribute__((packed)) mmap_entry_t;
 
-// global ptr
+// pointer before kernel page table established
+extern multiboot_t *mboot_ptr_tmp;
+
+// pointer after kernel page table established
 extern multiboot_t *glb_mboot_ptr;
 
 #endif // INCLUDE_MULTIBOOT_H_
