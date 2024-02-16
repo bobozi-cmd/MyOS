@@ -3,6 +3,7 @@
 #include "idt.h"
 #include "multiboot.h"
 #include "string.h"
+#include "task.h"
 #include "timer.h"
 #include "vargs.h"
 #include "types.h"
@@ -10,6 +11,7 @@
 #include "pmm.h"
 #include "vmm.h"
 #include "heap.h"
+#include <sched.h>
 
 void kern_init();
 
@@ -18,6 +20,7 @@ multiboot_t *glb_mboot_ptr;
 
 // kernel stack after paging
 char kern_stack[STACK_SIZE];
+uint32_t kern_stack_top;
 
 // tempory page table, 4k-align, 4KB/4B = 1K entries
 __attribute__((section(".init.data"))) pgd_t *pgd_tmp = (pgd_t *)0x1000;
@@ -72,13 +75,29 @@ __attribute__((section(".init.text"))) void kern_entry() {
     asm volatile ("mov %0, %%cr0" : : "r" (cr0));
 
     // switch kernel stack
-    uint32_t kern_stack_top = ((uint32_t)kern_stack + STACK_SIZE) & 0xFFFFFFF0;
+    kern_stack_top = ((uint32_t)kern_stack + STACK_SIZE) & 0xFFFFFFF0;
     asm volatile("mov %0, %%esp\n\t"
             "xor %%ebp, %%ebp" : : "r" (kern_stack_top));
     
     glb_mboot_ptr = mboot_ptr_tmp + PAGE_OFFSET;
 
     kern_init();
+}
+
+int flag = 0;
+
+int thread(void *arg) {
+    while (1) {
+        if(flag == 1) {
+            printk_color(rc_black, rc_green, "B");
+            flag = 0;
+        }
+    }
+    return 0;
+}
+
+void enable_intr() {
+    asm volatile ("sti");
 }
 
 void kern_init() {
@@ -100,8 +119,20 @@ void kern_init() {
     init_heap();
 
     printk_color(rc_black, rc_red, "\nThe Count of Physical Memory Page is: %u\n\n", phy_page_count);
-
     test_heap();
+
+    init_sched();
+
+    kernel_thread(thread, NULL);
+
+    enable_intr();
+
+    while (1) {
+        if (flag == 0) {
+            printk_color(rc_black, rc_red, "A");
+            flag = 1;
+        }
+    }
 
     while (1) {
         asm volatile ("hlt");
