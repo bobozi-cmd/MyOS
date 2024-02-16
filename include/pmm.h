@@ -7,7 +7,7 @@
 // thread stack size
 #define STACK_SIZE 8192
 
-// Max physical memory (512 MB)
+// Support only physical memory (512 MB)
 #define PMM_MAX_SIZE 0x20000000
 
 // Physical Memory Frame size

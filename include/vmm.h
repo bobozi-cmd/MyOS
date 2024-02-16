@@ -19,7 +19,7 @@
 #define PAGE_SIZE 4096
 
 #define PAGE_MASK 0xFFFFF000
-
+// 0x400(1K) - 1 = 0x3FF
 #define PGD_INDEX(x) (((x) >> 22) & 0x3FF)
 
 #define PTE_INDEX(x) (((x) >> 12) & 0x3FF)
@@ -37,7 +37,7 @@ typedef uint32_t pte_t;
 // map 512MB need 128 pte
 #define PTE_COUNT 128
 
-extern pgd_t pdg_kern[PGD_SIZE];
+extern pgd_t pgd_kern[PGD_SIZE];
 
 void init_vmm();
 

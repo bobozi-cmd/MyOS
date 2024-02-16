@@ -27,7 +27,7 @@ void init_vmm() {
     uint32_t pgd_kern_phy_addr = (uint32_t)pgd_kern - PAGE_OFFSET;
 
     register_interrupt_handler(14, &page_fault);
-
+    // switch temporal page table to formal page table
     switch_pgd(pgd_kern_phy_addr);
 
 }

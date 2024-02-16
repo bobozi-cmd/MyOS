@@ -33,7 +33,7 @@ void init_pmm() {
 
     mmap_entry_t *map_entry;
     for (map_entry = mmap_start_addr; map_entry < mmap_end_addr; map_entry++) {
-        // 1: available RAM
+        // 1: available RAM, use memory above 1MB(0x100000), because memory below 1MB has much device memory
         if (map_entry->type == 1 && map_entry->base_addr_low == 0x100000) {
             // store memory (exclude kernel memory) to page stack
             uint32_t page_addr = map_entry->base_addr_low + (uint32_t)(kern_end - kern_start);
